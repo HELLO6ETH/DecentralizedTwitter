@@ -1,6 +1,32 @@
-const contractAddress = "0xe67c95477131505fea4b1d64048602ba4ff8bbda";
+const contractAddress = "0xde81a0ef7b2de3cb3e8d832761e8bb30aa77477a";
 
 const contractAbi = [
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_index",
+					"type": "uint256"
+				}
+			],
+			"name": "dislikeTweet",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
+		{
+			"inputs": [
+				{
+					"internalType": "uint256",
+					"name": "_index",
+					"type": "uint256"
+				}
+			],
+			"name": "likeTweet",
+			"outputs": [],
+			"stateMutability": "nonpayable",
+			"type": "function"
+		},
 		{
 			"inputs": [
 				{
@@ -26,6 +52,57 @@ const contractAbi = [
 			"outputs": [],
 			"stateMutability": "payable",
 			"type": "function"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "sender",
+					"type": "address"
+				},
+				{
+					"indexed": true,
+					"internalType": "address",
+					"name": "receiver",
+					"type": "address"
+				},
+				{
+					"indexed": false,
+					"internalType": "uint256",
+					"name": "amount",
+					"type": "uint256"
+				}
+			],
+			"name": "TipSent",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "tweetId",
+					"type": "uint256"
+				}
+			],
+			"name": "TweetDisliked",
+			"type": "event"
+		},
+		{
+			"anonymous": false,
+			"inputs": [
+				{
+					"indexed": true,
+					"internalType": "uint256",
+					"name": "tweetId",
+					"type": "uint256"
+				}
+			],
+			"name": "TweetLiked",
+			"type": "event"
 		},
 		{
 			"anonymous": false,
@@ -65,6 +142,16 @@ const contractAbi = [
 					"internalType": "string",
 					"name": "content",
 					"type": "string"
+				},
+				{
+					"internalType": "uint256",
+					"name": "likes",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "dislikes",
+					"type": "uint256"
 				}
 			],
 			"stateMutability": "view",
@@ -102,6 +189,16 @@ const contractAbi = [
 					"internalType": "string",
 					"name": "content",
 					"type": "string"
+				},
+				{
+					"internalType": "uint256",
+					"name": "likes",
+					"type": "uint256"
+				},
+				{
+					"internalType": "uint256",
+					"name": "dislikes",
+					"type": "uint256"
 				}
 			],
 			"stateMutability": "view",
@@ -122,9 +219,12 @@ const contractAbi = [
 		}
 	];
 
+
 let web3;
 let contractInstance;
 let currentUser;
+let likedTweets = new Set();
+let dislikedTweets = new Set();
 
 async function initWeb3() {
 		if (window.ethereum) {
@@ -164,17 +264,54 @@ async function displayTweets() {
 				for (let i = 0; i < tweetCount; i++) {
 						const tweet = await contractInstance.methods.getTweet(i).call();
 						const username = tweet.author;
+						const tweetContent = tweet.content;
+						const likes = tweet.likes;
+						const dislikes = tweet.dislikes;
 
 						const listItem = document.createElement("li");
-						listItem.innerHTML = `<strong>${username}:</strong> ${tweet.content}`;
+						listItem.innerHTML = `<strong>${username}:</strong> ${tweetContent} <br> Likes: ${likes} | Dislikes: ${dislikes}`;
 
-						// Create a "Tip" button inside the tweet
+						// Create Like button
+						const likeButton = document.createElement("button");
+						likeButton.textContent = "Like";
+						likeButton.addEventListener("click", async () => {
+								try {
+										if (!likedTweets.has(i)) {
+												await contractInstance.methods.likeTweet(i).send({ from: currentUser });
+												likedTweets.add(i);
+												alert("Tweet liked successfully!");
+												displayTweets();
+										} else {
+												alert("You have already liked this tweet!");
+										}
+								} catch (error) {
+										console.error("Failed to like tweet:", error);
+								}
+						});
+
+						// Create Dislike button
+						const dislikeButton = document.createElement("button");
+						dislikeButton.textContent = "Dislike";
+						dislikeButton.addEventListener("click", async () => {
+								try {
+										if (!dislikedTweets.has(i)) {
+												await contractInstance.methods.dislikeTweet(i).send({ from: currentUser });
+												dislikedTweets.add(i);
+												alert("Tweet disliked successfully!");
+												displayTweets();
+										} else {
+												alert("You have already disliked this tweet!");
+										}
+								} catch (error) {
+										console.error("Failed to dislike tweet:", error);
+								}
+						});
+
+						// Create Tip button
 						const tipButton = document.createElement("button");
 						tipButton.textContent = "Tip";
-					tipButton.id = `tipButton-${i}`;
 						tipButton.addEventListener("click", async () => {
 								try {
-										// Call the tipAuthor function in the contract
 										await contractInstance.methods.tipAuthor(i).send({ value: web3.utils.toWei("0.01", "ether") });
 										alert("Tip sent successfully!");
 								} catch (error) {
@@ -182,6 +319,8 @@ async function displayTweets() {
 								}
 						});
 
+						listItem.appendChild(likeButton);
+						listItem.appendChild(dislikeButton);
 						listItem.appendChild(tipButton);
 						tweetList.appendChild(listItem);
 				}
@@ -189,7 +328,6 @@ async function displayTweets() {
 				console.error("Error fetching and displaying tweets:", error);
 		}
 }
-
 
 async function postTweet() {
 		const tweetContent = document.getElementById("tweetContent").value;
