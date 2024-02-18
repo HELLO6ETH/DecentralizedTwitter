@@ -1,224 +1,235 @@
+
+
 const contractAddress = "0xde81a0ef7b2de3cb3e8d832761e8bb30aa77477a";
+const prohibitedKeywords = [
+		'hate', 'violence', 'racist', 'nazi', 
+		'terrorist', 'murder', 'abuse', 'rape', 
+		'porn', 'sex', 'naked', 'drugs', 
+		'suicide', 'kill', 'assault', 'theft', 
+		'illegal', 'stole', 'fraud', 'phishing', 
+		'exploit', 'malware', 'virus', 'piracy', 
+		'leak', 'stolen', 'harassment', 'bully', 
+		'slur', 'discriminate', 'extremist','radical','raped','abused','murdered','violence',
+];
 
 const contractAbi = [
 		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "_index",
-					"type": "uint256"
-				}
-			],
-			"name": "dislikeTweet",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
+				"inputs": [
+						{
+								"internalType": "uint256",
+								"name": "_index",
+								"type": "uint256"
+						}
+				],
+				"name": "dislikeTweet",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 		},
 		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "_index",
-					"type": "uint256"
-				}
-			],
-			"name": "likeTweet",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
+				"inputs": [
+						{
+								"internalType": "uint256",
+								"name": "_index",
+								"type": "uint256"
+						}
+				],
+				"name": "likeTweet",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 		},
 		{
-			"inputs": [
-				{
-					"internalType": "string",
-					"name": "_content",
-					"type": "string"
-				}
-			],
-			"name": "postTweet",
-			"outputs": [],
-			"stateMutability": "nonpayable",
-			"type": "function"
+				"inputs": [
+						{
+								"internalType": "string",
+								"name": "_content",
+								"type": "string"
+						}
+				],
+				"name": "postTweet",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
 		},
 		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "_index",
-					"type": "uint256"
-				}
-			],
-			"name": "tipAuthor",
-			"outputs": [],
-			"stateMutability": "payable",
-			"type": "function"
+				"inputs": [
+						{
+								"internalType": "uint256",
+								"name": "_index",
+								"type": "uint256"
+						}
+				],
+				"name": "tipAuthor",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
 		},
 		{
-			"anonymous": false,
-			"inputs": [
-				{
-					"indexed": true,
-					"internalType": "address",
-					"name": "sender",
-					"type": "address"
-				},
-				{
-					"indexed": true,
-					"internalType": "address",
-					"name": "receiver",
-					"type": "address"
-				},
-				{
-					"indexed": false,
-					"internalType": "uint256",
-					"name": "amount",
-					"type": "uint256"
-				}
-			],
-			"name": "TipSent",
-			"type": "event"
+				"anonymous": false,
+				"inputs": [
+						{
+								"indexed": true,
+								"internalType": "address",
+								"name": "sender",
+								"type": "address"
+						},
+						{
+								"indexed": true,
+								"internalType": "address",
+								"name": "receiver",
+								"type": "address"
+						},
+						{
+								"indexed": false,
+								"internalType": "uint256",
+								"name": "amount",
+								"type": "uint256"
+						}
+				],
+				"name": "TipSent",
+				"type": "event"
 		},
 		{
-			"anonymous": false,
-			"inputs": [
-				{
-					"indexed": true,
-					"internalType": "uint256",
-					"name": "tweetId",
-					"type": "uint256"
-				}
-			],
-			"name": "TweetDisliked",
-			"type": "event"
+				"anonymous": false,
+				"inputs": [
+						{
+								"indexed": true,
+								"internalType": "uint256",
+								"name": "tweetId",
+								"type": "uint256"
+						}
+				],
+				"name": "TweetDisliked",
+				"type": "event"
 		},
 		{
-			"anonymous": false,
-			"inputs": [
-				{
-					"indexed": true,
-					"internalType": "uint256",
-					"name": "tweetId",
-					"type": "uint256"
-				}
-			],
-			"name": "TweetLiked",
-			"type": "event"
+				"anonymous": false,
+				"inputs": [
+						{
+								"indexed": true,
+								"internalType": "uint256",
+								"name": "tweetId",
+								"type": "uint256"
+						}
+				],
+				"name": "TweetLiked",
+				"type": "event"
 		},
 		{
-			"anonymous": false,
-			"inputs": [
-				{
-					"indexed": true,
-					"internalType": "address",
-					"name": "author",
-					"type": "address"
-				},
-				{
-					"indexed": false,
-					"internalType": "string",
-					"name": "content",
-					"type": "string"
-				}
-			],
-			"name": "TweetPosted",
-			"type": "event"
+				"anonymous": false,
+				"inputs": [
+						{
+								"indexed": true,
+								"internalType": "address",
+								"name": "author",
+								"type": "address"
+						},
+						{
+								"indexed": false,
+								"internalType": "string",
+								"name": "content",
+								"type": "string"
+						}
+				],
+				"name": "TweetPosted",
+				"type": "event"
 		},
 		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "_index",
-					"type": "uint256"
-				}
-			],
-			"name": "getTweet",
-			"outputs": [
-				{
-					"internalType": "address",
-					"name": "author",
-					"type": "address"
-				},
-				{
-					"internalType": "string",
-					"name": "content",
-					"type": "string"
-				},
-				{
-					"internalType": "uint256",
-					"name": "likes",
-					"type": "uint256"
-				},
-				{
-					"internalType": "uint256",
-					"name": "dislikes",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
+				"inputs": [
+						{
+								"internalType": "uint256",
+								"name": "_index",
+								"type": "uint256"
+						}
+				],
+				"name": "getTweet",
+				"outputs": [
+						{
+								"internalType": "address",
+								"name": "author",
+								"type": "address"
+						},
+						{
+								"internalType": "string",
+								"name": "content",
+								"type": "string"
+						},
+						{
+								"internalType": "uint256",
+								"name": "likes",
+								"type": "uint256"
+						},
+						{
+								"internalType": "uint256",
+								"name": "dislikes",
+								"type": "uint256"
+						}
+				],
+				"stateMutability": "view",
+				"type": "function"
 		},
 		{
-			"inputs": [],
-			"name": "getTweetsLength",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
+				"inputs": [],
+				"name": "getTweetsLength",
+				"outputs": [
+						{
+								"internalType": "uint256",
+								"name": "",
+								"type": "uint256"
+						}
+				],
+				"stateMutability": "view",
+				"type": "function"
 		},
 		{
-			"inputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"name": "tweets",
-			"outputs": [
-				{
-					"internalType": "address",
-					"name": "author",
-					"type": "address"
-				},
-				{
-					"internalType": "string",
-					"name": "content",
-					"type": "string"
-				},
-				{
-					"internalType": "uint256",
-					"name": "likes",
-					"type": "uint256"
-				},
-				{
-					"internalType": "uint256",
-					"name": "dislikes",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
+				"inputs": [
+						{
+								"internalType": "uint256",
+								"name": "",
+								"type": "uint256"
+						}
+				],
+				"name": "tweets",
+				"outputs": [
+						{
+								"internalType": "address",
+								"name": "author",
+								"type": "address"
+						},
+						{
+								"internalType": "string",
+								"name": "content",
+								"type": "string"
+						},
+						{
+								"internalType": "uint256",
+								"name": "likes",
+								"type": "uint256"
+						},
+						{
+								"internalType": "uint256",
+								"name": "dislikes",
+								"type": "uint256"
+						}
+				],
+				"stateMutability": "view",
+				"type": "function"
 		},
 		{
-			"inputs": [],
-			"name": "tweetsLength",
-			"outputs": [
-				{
-					"internalType": "uint256",
-					"name": "",
-					"type": "uint256"
-				}
-			],
-			"stateMutability": "view",
-			"type": "function"
+				"inputs": [],
+				"name": "tweetsLength",
+				"outputs": [
+						{
+								"internalType": "uint256",
+								"name": "",
+								"type": "uint256"
+						}
+				],
+				"stateMutability": "view",
+				"type": "function"
 		}
-	];
-
+];
 
 let web3;
 let contractInstance;
@@ -329,19 +340,41 @@ async function displayTweets() {
 		}
 }
 
-async function postTweet() {
-		const tweetContent = document.getElementById("tweetContent").value;
-		if (tweetContent) {
-				try {
-						await contractInstance.methods.postTweet(tweetContent).send({ from: currentUser });
-						console.log("Tweet posted successfully");
-						alert("Please wait, the transaction has been sent.");
-						displayTweets(); // Refresh tweet list after posting
-				} catch (error) {
-						console.error("Failed to post tweet:", error);
-				}
-		}
+
+
+async function isContentAppropriate(tweetContent) {
+    // Convert tweet content to lowercase for case-insensitive matching
+    const lowerCaseContent = tweetContent.toLowerCase();
+
+    // Check if tweet content contains any prohibited keywords
+    for (const keyword of prohibitedKeywords) {
+        if (lowerCaseContent.includes(keyword)) {
+            return false; // Found a prohibited keyword, tweet content is inappropriate
+        }
+    }
+    return true; // No prohibited keywords found, tweet content is appropriate
 }
+
+async function postTweet() {
+    const tweetContent = document.getElementById('tweetContent').value;
+
+    // Check if the tweet content is appropriate
+    if (await isContentAppropriate(tweetContent)) {
+        try {
+            // Post the tweet if it's appropriate
+            await contractInstance.methods.postTweet(tweetContent).send();
+            alert('Tweet posted successfully!');
+            document.getElementById('tweetContent').value = ''; // Clear the textbox
+            displayTweets();
+        } catch (error) {
+            console.error('Failed to post tweet:', error);
+        }
+    } else {
+        // Inform the user that the content is inappropriate
+        alert('Your tweet contains inappropriate content. Please revise before posting.');
+    }
+}
+
 
 // Call login function on page load
 login();
